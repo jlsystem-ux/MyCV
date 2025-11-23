@@ -26,7 +26,7 @@ class Project(models.Model):
     description = models.TextField()
     short_description = models.CharField(max_length=200, help_text="One-line description")
     technologies = models.ManyToManyField(Technology, related_name='projects')
-    image = models.URLField(blank=True, help_text="Project screenshot URL")
+    image = models.ImageField(upload_to='portfolio/images/', blank=True, null=True, help_text="Upload project screenshot")
     demo_url = models.URLField(blank=True, help_text="Live demo URL")
     github_url = models.URLField(blank=True, help_text="GitHub repository URL")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='completed')

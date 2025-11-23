@@ -30,7 +30,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     excerpt = models.TextField(max_length=300, help_text="Brief description of the post")
     content = models.TextField()
-    featured_image = models.URLField(blank=True, help_text="URL to featured image")
+    featured_image = models.ImageField(upload_to='blog/images/', blank=True, null=True, help_text="Upload featured image")
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
