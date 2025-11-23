@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog - Luis Alberto Arboleda{% endblock %}
+
+{% block hero %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1><i class="fas fa-blog"></i> Blog</h1>
+        <p class="lead">Thoughts, tutorials, and insights on software development and QA</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container content-section">
+    {% if categories %}
+    <div class="mb-4">
+        <a href="{% url 'blog:post_list' %}" class="btn btn-sm {% if not selected_category %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">All</a>
+        {% for category in categories %}
+        <a href="?category={{ category.slug }}" class="btn btn-sm {% if selected_category == category.slug %}btn-primary{% else %}btn-outline-primary{% endif %} me-2">
+            {{ category.name }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row">
+        {% for post in page_obj %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image }}" class="card-img-top" alt="{{ post.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-newspaper fa-3x text-white"></i>
+                </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    {% if post.category %}
+                    <span class="badge bg-primary mb-2">{{ post.category.name }}</span>
+                    {% endif %}
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.excerpt }}</p>
+                    <div class="mt-auto">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ post.published_at|date:"M d, Y" }} |
+                            <i class="fas fa-eye"></i> {{ post.views }} views
+                        </small>
+                        <a href="{% url 'blog:post_detail' post.slug %}" class="btn btn-primary btn-sm mt-2 w-100">
+                            Read More <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> No blog posts available yet. Check back soon!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

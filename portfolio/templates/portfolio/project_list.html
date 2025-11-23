@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Portfolio - Luis Alberto Arboleda{% endblock %}
+
+{% block hero %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1><i class="fas fa-briefcase"></i> Portfolio</h1>
+        <p class="lead">Showcasing my projects and technical expertise</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container content-section">
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100">
+                {% if project.image %}
+                <img src="{{ project.image }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-primary d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-code fa-3x text-white"></i>
+                </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    {% if project.featured %}
+                    <span class="badge bg-warning text-dark mb-2"><i class="fas fa-star"></i> Featured</span>
+                    {% endif %}
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.short_description }}</p>
+
+                    <div class="mb-3">
+                        {% for tech in project.technologies.all|slice:":3" %}
+                        <span class="badge bg-secondary me-1">{{ tech.name }}</span>
+                        {% endfor %}
+                        {% if project.technologies.count > 3 %}
+                        <span class="badge bg-light text-dark">+{{ project.technologies.count|add:"-3" }} more</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-auto">
+                        <a href="{% url 'portfolio:project_detail' project.slug %}" class="btn btn-primary btn-sm w-100">
+                            View Details <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle"></i> No projects available yet. Check back soon!
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

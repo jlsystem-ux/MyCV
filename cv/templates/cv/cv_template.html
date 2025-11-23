@@ -1,90 +1,128 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if personal_info %}{{ personal_info.name }} - CV{% else %}CV{% endif %}</title>
-    <link rel="stylesheet" href="{% static 'cv/style.css' %}">
-</head>
-<body>
-    <div class="container">
-        {% if personal_info %}
-        <header>
-            <h1>{{ personal_info.name }}</h1>
-            <h2>{{ personal_info.title }}</h2>
-            <div class="contact-info">
-                <p>
-                    <a href="mailto:{{ personal_info.email }}">{{ personal_info.email }}</a> |
-                    {{ personal_info.phone }} |
-                    {{ personal_info.location }}
-                    {% if personal_info.linkedin %}
-                    | <a href="{{ personal_info.linkedin }}" target="_blank">LinkedIn</a>
-                    {% endif %}
-                </p>
-            </div>
-        </header>
+{% extends 'base.html' %}
 
-        <section class="summary">
-            <h3>Professional Summary</h3>
-            <p>{{ personal_info.summary }}</p>
-        </section>
-        {% endif %}
+{% block title %}{{ personal_info.name|default:"Luis Alberto Arboleda" }} - CV{% endblock %}
 
-        {% if skills_by_category %}
-        <section class="skills">
-            <h3>Core Skills</h3>
+{% block hero %}
+{% if personal_info %}
+<div class="hero-section">
+    <div class="container text-center">
+        <h1>{{ personal_info.name }}</h1>
+        <p class="lead">{{ personal_info.title }}</p>
+        <div class="mt-4">
+            <a href="mailto:{{ personal_info.email }}" class="btn btn-light me-2">
+                <i class="fas fa-envelope"></i> {{ personal_info.email }}
+            </a>
+            <a href="tel:{{ personal_info.phone }}" class="btn btn-outline-light me-2">
+                <i class="fas fa-phone"></i> {{ personal_info.phone }}
+            </a>
+            {% if personal_info.linkedin %}
+            <a href="{{ personal_info.linkedin }}" target="_blank" class="btn btn-outline-light">
+                <i class="fab fa-linkedin"></i> LinkedIn
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container content-section">
+    {% if personal_info %}
+    <!-- Professional Summary -->
+    <section class="mb-5">
+        <h2 class="section-heading">Professional Summary</h2>
+        <p class="lead">{{ personal_info.summary }}</p>
+    </section>
+
+    {% if skills_by_category %}
+    <!-- Core Skills -->
+    <section class="mb-5">
+        <h2 class="section-heading">Core Skills</h2>
+        <div class="row">
             {% for category, skill_list in skills_by_category.items %}
-            <div class="skill-category">
-                <strong>{{ category }}:</strong> {{ skill_list|join:", " }}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <i class="fas fa-check-circle"></i> {{ category }}
+                        </h5>
+                        <p class="card-text">{{ skill_list|join:", " }}</p>
+                    </div>
+                </div>
             </div>
             {% endfor %}
-        </section>
-        {% endif %}
+        </div>
+    </section>
+    {% endif %}
 
-        {% if experiences %}
-        <section class="experience">
-            <h3>Professional Experience</h3>
-            {% for exp in experiences %}
-            <div class="job">
-                <h4>{{ exp.position }}</h4>
-                <p class="company">{{ exp.company }} | {{ exp.start_date }} - {{ exp.end_date }}</p>
-                <p class="description">{{ exp.description|linebreaks }}</p>
+    {% if experiences %}
+    <!-- Professional Experience -->
+    <section class="mb-5">
+        <h2 class="section-heading">Professional Experience</h2>
+        {% for exp in experiences %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h4 class="card-title">{{ exp.position }}</h4>
+                <h6 class="card-subtitle mb-3 text-muted">
+                    <i class="fas fa-building"></i> {{ exp.company }} |
+                    <i class="fas fa-calendar"></i> {{ exp.start_date }} - {{ exp.end_date }}
+                </h6>
+                <div class="card-text">{{ exp.description|linebreaks }}</div>
             </div>
-            {% endfor %}
-        </section>
-        {% endif %}
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
 
+    <div class="row">
         {% if education %}
-        <section class="education">
-            <h3>Education</h3>
+        <!-- Education -->
+        <div class="col-md-6 mb-5">
+            <h2 class="section-heading">Education</h2>
             {% for edu in education %}
-            <div class="education-item">
-                <h4>{{ edu.degree }}</h4>
-                <p>{{ edu.institution }}, {{ edu.location }} ({{ edu.start_year }} - {{ edu.end_year }})</p>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ edu.degree }}</h5>
+                    <p class="card-text">
+                        <i class="fas fa-university"></i> {{ edu.institution }}, {{ edu.location }}<br>
+                        <i class="fas fa-calendar"></i> {{ edu.start_year }} - {{ edu.end_year }}
+                    </p>
+                </div>
             </div>
             {% endfor %}
-        </section>
+        </div>
         {% endif %}
 
         {% if certifications %}
-        <section class="certifications">
-            <h3>Certifications</h3>
-            <ul>
-                {% for cert in certifications %}
-                <li>{{ cert.name }}{% if cert.year %} ({{ cert.year }}){% endif %}</li>
-                {% endfor %}
-            </ul>
-        </section>
-        {% endif %}
-
-        {% if not personal_info %}
-        <div class="no-data">
-            <h2>Welcome to Your CV Site!</h2>
-            <p>Please log in to the <a href="/admin/">admin panel</a> to add your CV information.</p>
-            <p>Default admin credentials need to be created. Run: <code>python manage.py createsuperuser</code></p>
+        <!-- Certifications -->
+        <div class="col-md-6 mb-5">
+            <h2 class="section-heading">Certifications</h2>
+            <div class="card">
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        {% for cert in certifications %}
+                        <li class="mb-2">
+                            <i class="fas fa-certificate text-primary"></i>
+                            {{ cert.name }}{% if cert.year %} <span class="text-muted">({{ cert.year }})</span>{% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
         {% endif %}
     </div>
-</body>
-</html>
+
+    {% else %}
+    <!-- No Data Message -->
+    <div class="alert alert-info text-center" role="alert">
+        <h2><i class="fas fa-exclamation-circle"></i> Welcome to Your CV Site!</h2>
+        <p class="mb-3">Please log in to the <a href="/admin/" class="alert-link">admin panel</a> to add your CV information.</p>
+        <p class="mb-0">
+            <small>Default admin credentials need to be created. Run: <code>python manage.py createsuperuser</code></small>
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
